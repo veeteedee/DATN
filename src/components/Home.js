@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import './Home.css';
 export default function Home() {
@@ -21,6 +22,13 @@ export default function Home() {
   // }, [])
 
 
+  //localStorage để lưu giá trị mới nhâp và hiện lên bảng
+  useEffect(() => {
+    // Retrieve data from localStorage on component mount
+    const storedData = JSON.parse(localStorage.getItem('pidData')) || [];
+    setData(storedData);
+  }, []);
+
   let submit = async (e) => {
     e.preventDefault()
 
@@ -31,17 +39,16 @@ export default function Home() {
         setpoint, kp, td, ti
       })
 
-      setData([...data, { setpoint, kp, td, ti, time: currentTime }]);
+      // setData([...data, { setpoint, kp, td, ti, time: currentTime }]);
+      const newData = [...data, { setpoint, kp, td, ti, time: currentTime }];
+      setData(newData);
+      localStorage.setItem('pidData', JSON.stringify(newData));
 
       setSetpoint('');
       setKp('');
       setTd('');
       setTi('');
       setTime(currentTime);
-
-      // .then(res =>{
-      // window.location.reload()
-      // })
 
     }
     catch (e) {
@@ -52,42 +59,46 @@ export default function Home() {
   }
 
   const handleDelete = (setpointToDelete) => {
-    setData(data.filter(item => item.setpoint !== setpointToDelete));
+
+    const newData = data.filter(item => item.setpoint !== setpointToDelete);
+    setData(newData);
+    localStorage.setItem('pidData', JSON.stringify(newData));
+    
+    // setData(data.filter(item => item.setpoint !== setpointToDelete));
   }
 
   return (
     <div className='cont'>
 
-      <h1>HỆ THỐNG ĐIềU KHIỂN ĐỘNG CƠ DÙNG PHƯƠNG PHÁP PID</h1>
+      <h1>HỆ THỐNG ĐIỀU KHIỂN ĐỘNG CƠ DÙNG PHƯƠNG PHÁP PID</h1>
       <form action="POST">
 
         <p class="note">
           Thông số Setpoint&#58; &nbsp;
-          <textarea name="text" onChange={(e) => { setSetpoint(e.target.value) }} placeholder="Nhập Setpoint" cols="20" rows="1"></textarea>
+          <textarea name="text" onChange={(e) => { setSetpoint(e.target.value) }} value={setpoint || ''} placeholder="Nhập Setpoint" cols="20" rows="1"></textarea>
         </p>
 
 
         <p class="note">
           Thông số Kp&#58; &nbsp;
-          <textarea name="text" onChange={(e) => { setKp(e.target.value) }} placeholder="Nhập Kp" cols="20" rows="1"></textarea>
+          <textarea name="text" onChange={(e) => { setKp(e.target.value) }} value={kp || ''} placeholder="Nhập Kp" cols="20" rows="1"></textarea>
         </p>
 
 
         <p class="note">
           Thông số Td&#58; &nbsp;
-          <textarea name="text" onChange={(e) => { setTd(e.target.value) }} placeholder="Nhập Td" cols="20" rows="1"></textarea>
+          <textarea name="text" onChange={(e) => { setTd(e.target.value) }} value={td || ''} placeholder="Nhập Td" cols="20" rows="1"></textarea>
         </p>
 
 
         <p class="note">
           Thông số Ti&#58; &nbsp;
-          <textarea name="text" onChange={(e) => { setTi(e.target.value) }} placeholder="Nhập Ti" cols="20" rows="1"></textarea>
+          <textarea name="text" onChange={(e) => { setTi(e.target.value) }} value={ti || ''} placeholder="Nhập Ti" cols="20" rows="1"></textarea>
         </p>
 
 
       </form>
       <input class="Button" type="submit" onClick={submit} value="submit" />
-
 
       <table>
         <thead>
@@ -97,7 +108,7 @@ export default function Home() {
             <th>Thông số Td</th>
             <th>Thông số Ti</th>
             {/* <th>RPM</th> */}
-            <th>Thời gian thực</th>
+            <th>Thời gian gửi</th>
             <th>Xóa dữ liệu</th>
           </tr>
         </thead>
@@ -122,6 +133,13 @@ export default function Home() {
         </tbody>
       </table>
 
+      <ul>
+        <li>
+          <Link to="/chart">
+            <button className="Button">Go to Chart</button>
+          </Link>
+        </li>
+      </ul> 
 
     </div>
 
