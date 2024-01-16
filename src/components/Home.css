@@ -24,7 +24,7 @@
   background-size: cover;
   background-position: center;
   transition: transform 0.3s, opacity 0.3s;
-  background-image: url('/public/image2.jpg');
+  background-image: url('\/public\/image2.jpg');
   margin-top: 1px;
   /* border-radius: 15px; */
 }
